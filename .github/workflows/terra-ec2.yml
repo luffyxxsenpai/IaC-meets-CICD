@@ -1,0 +1,54 @@
+name: Terraform Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+
+
+permissions:
+  id-token: write   # Required for OIDC authentication
+  contents: read    # Required to checkout code
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: terrarun
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials via OIDC
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: arn:aws:iam::537124957197:role/github-runner-terraform-vpc
+        aws-region: ap-south-1
+        role-session-name: github-terraform-session
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.11.4
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./IAC-VPC
+
+    - name: Terraform Format
+      run: terraform fmt -check
+      working-directory: ./IAC-VPC
+
+
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: ./IAC-VPC
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+      continue-on-error: false
+      working-directory: ./IAC-VPC
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve tfplan
+      working-directory: ./IAC-VPC
