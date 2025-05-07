@@ -1,6 +1,6 @@
 locals {
-  env     = "producckkkk"
-  region  = "ap-south-1"
+  env    = "producckkkk"
+  region = "ap-south-1"
 
   vpc_name             = "iac-vpc"
   vpc_cidr             = "10.0.0.0/16"
