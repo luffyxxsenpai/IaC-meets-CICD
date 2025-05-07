@@ -53,3 +53,8 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve tfplan
       working-directory: ./IAC-VPC
+
+   
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve 
+      working-directory: ./IAC-VPC
