@@ -3,6 +3,8 @@ name: Terraform Deployment
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'IAC-VPC/**'
 
 
 permissions:
@@ -12,7 +14,7 @@ permissions:
 jobs:
   terraform:
     name: Terraform
-    runs-on: terrarun
+    runs-on: terrarunner
     environment: production
 
     steps:
