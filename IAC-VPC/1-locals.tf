@@ -1,5 +1,5 @@
 locals {
-  env     = "producck"
+  env     = "producckkkk"
   region  = "ap-south-1"
 
   vpc_name             = "iac-vpc"
