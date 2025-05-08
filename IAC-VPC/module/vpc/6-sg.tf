@@ -1,10 +1,10 @@
 resource "aws_security_group" "sg" {
-  name        = "${local.env}-ssh-http_only"
+  name        = "${var.env}-ssh-http_only"
   description = "allow ssh and http"
   vpc_id      = aws_vpc.main.id
 
   tags = {
-    Name = "${local.env}-ssh-http_only"
+    Name = "${var.env}-ssh-http_only"
   }
 }
 

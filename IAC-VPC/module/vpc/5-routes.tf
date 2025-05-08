@@ -9,7 +9,7 @@ resource "aws_route_table" "public-rt" {
   }
 
   tags = {
-    Name = "${local.env}-${local.vpc_name}-public-rt"
+    Name = "${var.env}-${var.vpc_name}-public-rt"
   }
 }
 
@@ -39,7 +39,7 @@ resource "aws_route_table" "private1-rt" {
   }
 
   tags = {
-    Name = "${local.env}-${local.vpc_name}-private1-rt"
+    Name = "${var.env}-${var.vpc_name}-private1-rt"
   }
 }
 
@@ -54,7 +54,7 @@ resource "aws_route_table" "private2-rt" {
   }
 
   tags = {
-    Name = "${local.env}-${local.vpc_name}-private2-rt"
+    Name = "${var.env}-${var.vpc_name}-private2-rt"
   }
 }
 
