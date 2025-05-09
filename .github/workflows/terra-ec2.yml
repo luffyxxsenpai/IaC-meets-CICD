@@ -33,28 +33,28 @@ jobs:
 
     - name: Terraform Init
       run: terraform init
-      working-directory: ./IAC-VPC
+      working-directory: ./infra_setup_terraform
 
     - name: Terraform Format
       run: terraform fmt -check
-      working-directory: ./IAC-VPC
+      working-directory: ./infra_setup_terraform
 
 
     - name: Terraform Validate
       run: terraform validate
-      working-directory: ./IAC-VPC
+      working-directory: ./infra_setup_terraform
 
     - name: Terraform Plan
       run: terraform plan -out=tfplan
       continue-on-error: false
-      working-directory: ./IAC-VPC
+      working-directory: ./infra_setup_terraform
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve tfplan
-      working-directory: ./IAC-VPC
+      working-directory: ./infra_setup_terraform
 
    
     - name: Terraform Destroy
       run: terraform destroy -auto-approve 
-      working-directory: ./IAC-VPC
+      working-directory: ./infra_setup_terraform
