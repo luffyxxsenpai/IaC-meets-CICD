@@ -1,0 +1,123 @@
+---
+- name: Configure GitHub Actions Self-Hosted Runner
+  hosts: all
+  become: yes
+  vars:
+    github_owner: "luffyxxsenpai"
+    github_repo: "IaC-meets-CICD"
+    github_token: "{{ lookup('env','GITHUB_TOKEN') }}"
+    runner_version: "2.323.0"
+    runner_checksum: "0dbc9bf5a58620fc52cb6cc0448abcca964a8d74b5f39773b7afcad9ab691e19"
+
+    
+    runner_dir: "/home/ubuntu/actions-runner"
+    runner_user: "ubuntu"
+    runner_group: "ubuntu"
+    service_name: "github_runner"
+
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - tar
+          - git
+          - libicu-dev
+          - unzip
+          - jq
+        state: present
+        update_cache: yes
+
+    - name: Get GitHub Actions runner registration token
+      uri:
+        url: "https://api.github.com/repos/{{ github_owner }}/{{ github_repo }}/actions/runners/registration-token"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ github_token }}"
+          Accept: "application/vnd.github+json"
+          X-GitHub-Api-Version: "2022-11-28"
+        status_code: 201
+        return_content: yes
+      register: token_response
+      no_log: true
+      retries: 3
+      delay: 5
+      until: token_response is succeeded
+
+    - name: Set registration token fact
+      set_fact:
+        runner_token: "{{ token_response.json.token }}"
+      no_log: true
+
+    - name: Create runner directory
+      file:
+        path: "{{ runner_dir }}"
+        state: directory
+        owner: "{{ runner_user }}"
+        group: "{{ runner_group }}"
+        mode: '0755'
+
+    - name: Download GitHub Actions runner
+      get_url:
+        url: "https://github.com/actions/runner/releases/download/v{{ runner_version }}/actions-runner-linux-x64-{{ runner_version }}.tar.gz"
+        dest: "{{ runner_dir }}/actions-runner.tar.gz"
+        checksum: "sha256:{{ runner_checksum }}"
+        owner: "{{ runner_user }}"
+        group: "{{ runner_group }}"
+      retries: 3
+      delay: 5
+
+    - name: Extract runner archive
+      unarchive:
+        src: "{{ runner_dir }}/actions-runner.tar.gz"
+        dest: "{{ runner_dir }}"
+        remote_src: yes
+        owner: "{{ runner_user }}"
+        group: "{{ runner_group }}"
+        extra_opts: ["--no-same-owner"]
+
+
+
+    - name: Configure GitHub Actions runner
+      become_user: "{{ runner_user }}"
+      command: >
+        ./config.sh
+        --url https://github.com/{{ github_owner }}/{{ github_repo }}
+        --token {{ runner_token }}
+        --name "runner-{{ inventory_hostname_short }}-{{ 100000 | random }}"
+        --unattended
+        --work _work
+        --replace
+      args:
+        chdir: "{{ runner_dir }}"
+      environment:
+        RUNNER_ALLOW_RUNASROOT: "0"
+      register: config_result
+      changed_when: "'already exists' not in config_result.stderr"
+
+    - name: Install runner service
+      command: >
+        ./svc.sh install {{ runner_user }}
+      args:
+        chdir: "{{ runner_dir }}"
+      environment:
+        RUNNER_SERVICE_NAME: "github-runner-{{ inventory_hostname_short }}"
+
+    - name: Start runner service
+      command: >
+        ./svc.sh start
+      args:
+        chdir: "{{ runner_dir }}"
+
+- name: Cleanup on failure
+  hosts: all
+  become: yes
+  tasks:
+    - name: Remove runner registration
+      command: "./config.sh remove --token {{ runner_token }}"
+      args:
+        chdir: "{{ runner_dir }}"
+      ignore_errors: yes
+      when: "'config_result' in vars and config_result is failed"
+      run_once: true
+      delegate_to: "{{ inventory_hostname }}"

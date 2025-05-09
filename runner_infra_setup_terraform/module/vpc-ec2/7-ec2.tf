@@ -36,7 +36,7 @@ resource "aws_instance" "runner-ec2" {
   }
 
   tags = {
-    Name = "${var.env}-${var.vpc_name}"
+    Name = "selfhosted-runner"
   }
 
 }
