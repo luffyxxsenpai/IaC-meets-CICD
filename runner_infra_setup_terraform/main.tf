@@ -2,7 +2,7 @@ module "runner-infra" {
   source = "./module/vpc-ec2"
 
   env                  = "prod"
-  vpc_name             = "git-runner"
+  vpc_name             = "github-runner"
   region               = "ap-south-1"
   vpc_cidr             = "10.0.0.0/24"
   instance_tenancy     = "default"
