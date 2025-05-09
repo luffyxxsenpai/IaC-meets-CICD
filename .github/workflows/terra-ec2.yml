@@ -14,7 +14,7 @@ permissions:
 jobs:
   terraform:
     name: Terraform
-    runs-on: terrarunner
+    runs-on: self-hosted
     environment: production
 
     steps:
