@@ -8,15 +8,14 @@
     github_token: "{{ lookup('env','GITHUB_TOKEN') }}"
     runner_version: "2.323.0"
     runner_checksum: "0dbc9bf5a58620fc52cb6cc0448abcca964a8d74b5f39773b7afcad9ab691e19"
-
-    
     runner_dir: "/home/ubuntu/actions-runner"
     runner_user: "ubuntu"
     runner_group: "ubuntu"
     service_name: "github_runner"
+    nodejs_version: "18.x"  
 
   tasks:
-    - name: Install required packages
+    - name: Install required system packages
       apt:
         name:
           - curl
@@ -25,8 +24,35 @@
           - libicu-dev
           - unzip
           - jq
+          - build-essential
         state: present
         update_cache: yes
+
+    - name: Add NodeSource repository
+      apt_repository:
+        repo: "deb https://deb.nodesource.com/node_{{ nodejs_version }} {{ ansible_distribution_release }} main"
+        state: present
+        filename: "nodesource"
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: Install Node.js and npm
+      apt:
+        name: nodejs
+        state: present
+        update_cache: yes
+
+    - name: Verify Node.js installation
+      command: node --version
+      register: node_version
+      changed_when: false
+      failed_when: node_version.rc != 0
+
+    - name: Verify npm installation
+      command: npm --version
+      register: npm_version
+      changed_when: false
+      failed_when: npm_version.rc != 0
 
     - name: Get GitHub Actions runner registration token
       uri:

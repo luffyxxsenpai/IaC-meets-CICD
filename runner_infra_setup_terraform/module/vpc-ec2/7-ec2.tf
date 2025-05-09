@@ -10,7 +10,7 @@ resource "aws_key_pair" "ssh-key-pair" {
 }
 
 resource "local_file" "ssh-pem-local" {
-  filename        = "${path.module}/${aws_key_pair.ssh-key-pair.key_name}"
+  filename        = "./${aws_key_pair.ssh-key-pair.key_name}"
   content         = tls_private_key.ssh_key_gen.private_key_pem
   file_permission = "0400"
 }
