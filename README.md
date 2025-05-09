@@ -159,3 +159,18 @@ jobs:
 - `permissions` is required for OIDC 
 - ` - name: Configure AWS Credentials via OIDC` this sections specify which role to assume from aws which later will be used in pipeline
 - after that we specify all the steps or stages we want to have in our pipeline
+
+- now create an ec2 and install ansible with your aws credentials and github token configured
+- here i have used aws profiles to authenticate but you can use other methods
+- make sure it has enough permission to list and get instance ip
+- then run the ansible playbook which will fetch public ip of instance tagged with selfhosted-runner
+- it will perform the entire setup of github runner and we can see a selfhosted runner in repository setting -> actions -> runner
+- i have well a lot of them cause of testing 
+![img](https://github.com/luffyxxsenpai/IaC-meets-CICD/blob/main/img/runner.png)
+- when the runner is active and listening for jobs it will indicate status as IDLE
+
+- now all we have to do is make any commit in the 'infra_setup_terraform' and it will start executing it on our selfhosted runner
+
+**make sure to change the s3 bucket in terraform providers and github related env in ansible runner**
+
+---
