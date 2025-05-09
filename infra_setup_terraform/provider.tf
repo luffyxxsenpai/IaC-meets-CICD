@@ -10,11 +10,9 @@ terraform {
     key          = "terraform-infra-setup.tfstate"
     region       = "ap-south-1"
     use_lockfile = true
-    profile      = "super"
   }
 }
 
 provider "aws" {
   region  = "ap-south-1"
-  profile = "super"
 }
