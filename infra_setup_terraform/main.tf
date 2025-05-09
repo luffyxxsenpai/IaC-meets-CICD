@@ -1,7 +1,7 @@
 module "vpc" {
   source = "./module/vpc"
 
-  env                  = "prodddd"
+  env                  = "proddddd"
   region               = "ap-south-1"
   vpc_name             = "prod"
   vpc_cidr             = "10.0.0.0/16"
