@@ -11,7 +11,7 @@ Automating cloud resource deployment using Terraform as IaC and Github Actions
 - Temporary AWS credentials via AssumeRoleWithWebIdentity
 - S3 remote backend with state locking for Terraform operations
 
-![img](https://github.com/luffyxxsenpai/IaC-meets-CICD/blob/main/final.svg)
+![img](https://github.com/luffyxxsenpai/IaC-meets-CICD/blob/main/img/final.svg)
 
 
 ## infra_setup_terraform
@@ -89,8 +89,11 @@ IaC-meets-CICD main*​​​ 󱍢 tree .
 ## AWS OIDC
 - how to setup aws oidc for github
 - create a identity provider in aws IAM for 'https://token.actions.githubusercontent.com' as provider and 'sts.amazonaws.com' as an audience
+![img](https://github.com/luffyxxsenpai/IaC-meets-CICD/blob/main/img/identity.png)
+![img](https://github.com/luffyxxsenpai/IaC-meets-CICD/blob/main/img/identity1.png)
 
 - create a role with trusted entity type as web identity and choose the github provider and rest of the information
+![img](https://github.com/luffyxxsenpai/IaC-meets-CICD/blob/main/img/role.png)
 
 - assign the policy you want to give (for testing you can give AdministratorAccess)
 - the trurst policy will be something like this
