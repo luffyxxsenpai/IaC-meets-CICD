@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "s3" {
-    bucket       = "luffysenpaiterraformbucket"
+    bucket       = "luffysenpaitderraformbucket"
     key          = "terraform-runner-infra.tfstate"
     region       = "ap-south-1"
     use_lockfile = true
