@@ -270,14 +270,6 @@ GitHub Actions triggers, authenticates via OIDC, and runs Terraform on your self
 
 ---
 
-## TODOs / Improvements
-
-- [ ] Add `terraform plan` as a PR check — `apply` only on merge to main
-- [ ] Add `terraform fmt` + `validate` step to pipeline
-- [ ] Add `tfsec` or `checkov` for IaC security scanning
-- [ ] Scope OIDC trust policy to specific branches (currently `*`)
-- [ ] Add runner auto-deregistration and EC2 termination after job completion
-- [ ] Move GitHub registration token out of `group_vars` and into AWS Secrets Manager
 
 
 
