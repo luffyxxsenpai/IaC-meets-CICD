@@ -1,0 +1,55 @@
+name: Terraform Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'infra_setup_terraform/**'
+
+
+permissions:
+  id-token: write   # Required for OIDC authentication
+  contents: read    # Required to checkout code
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: self-hosted
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials via OIDC
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::5xxxxxxxxxxxx7197:role/github-runner-terraform-vpc
+        aws-region: ap-south-1
+        role-session-name: github-terraform-session
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./infra_setup_terraform
+
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: ./infra_setup_terraform
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+      continue-on-error: false
+      working-directory: ./infra_setup_terraform
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve tfplan
+      working-directory: ./infra_setup_terraform
+
+   
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve 
+      working-directory: ./infra_setup_terraform
